@@ -20,9 +20,10 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const title = document.getElementById("pin-title").value;
     const url = document.getElementById("pin-url").value;
+    const type = document.getElementById("pin-type").value;
 
     let requests = JSON.parse(localStorage.getItem("pinRequests") || "[]");
-    requests.push({ title, url, date: new Date().toLocaleString(), approved: false });
+    requests.push({ title, url, type, date: new Date().toISOString(), approved: false });
     localStorage.setItem("pinRequests", JSON.stringify(requests));
 
     alert("Pin request sent for approval!");
@@ -42,7 +43,30 @@ document.addEventListener("DOMContentLoaded", () => {
   pins.forEach(p => {
     const div = document.createElement("div");
     div.className = "pin";
-    div.innerHTML = `<img src="${p.url}" alt="${p.title}"><p>${p.title}</p>`;
+
+    if(p.type === "image"){
+      div.innerHTML = `<img src="${p.url}" alt="${p.title}"><p>${p.title}</p>`;
+    } else if(p.type === "video"){
+      const videoId = getYouTubeID(p.url);
+      if(videoId){
+        div.innerHTML = `
+          <iframe width="100%" height="200"
+                  src="https://www.youtube.com/embed/${videoId}"
+                  frameborder="0" allowfullscreen></iframe>
+          <p>${p.title}</p>
+        `;
+      } else {
+        div.innerHTML = `<p>Invalid video URL: ${p.title}</p>`;
+      }
+    }
+
     container.appendChild(div);
   });
+
+  // Helper function to extract YouTube video ID
+  function getYouTubeID(url){
+    const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return match && match[1].length == 11 ? match[1] : null;
+  }
 });
