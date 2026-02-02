@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderRequests() {
-    const requests = getRequests();
+    const requests = getRequests().filter(r => !r.approved);
     requestsDiv.innerHTML = "";
 
     if (requests.length === 0) {
@@ -18,11 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    requests.forEach((r) => {
+    requests.forEach(r => {
       const card = document.createElement("div");
       card.className = "request-card";
       card.innerHTML = `
-        <p><strong>${r.date}</strong>: ${r.title} (${r.type})</p>
+        <p>${r.title} (${r.type})</p>
         <div>
           <a href="${r.url}" target="_blank">View</a>
           <button class="approve-btn">Approve</button>
@@ -31,10 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
       requestsDiv.appendChild(card);
 
-      // Approve button
       card.querySelector(".approve-btn").addEventListener("click", () => {
         const allRequests = getRequests();
-        const idx = allRequests.findIndex(req => req.date === r.date);
+        const idx = allRequests.findIndex(req => req.id === r.id);
         if(idx > -1){
           allRequests[idx].approved = true;
           saveRequests(allRequests);
@@ -43,10 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      // Reject button
       card.querySelector(".reject-btn").addEventListener("click", () => {
         const allRequests = getRequests();
-        const idx = allRequests.findIndex(req => req.date === r.date);
+        const idx = allRequests.findIndex(req => req.id === r.id);
         if(idx > -1){
           allRequests.splice(idx, 1);
           saveRequests(allRequests);
