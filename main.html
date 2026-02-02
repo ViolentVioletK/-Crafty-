@@ -4,56 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crafty - Main</title>
+
+  <!-- Flower Emoji Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="main-page">
 
-  <!-- Plus Button top-right -->
+  <!-- Plus Button (top-right) -->
   <button id="plus-btn" class="circle-btn" title="Add Pin">+</button>
 
-  <!-- Password Button top-left -->
+  <!-- Owner Button (top-left) -->
   <button id="password-btn" class="password-btn" title="Owner Only">OWNER</button>
 
-  <!-- Search Bar -->
-  <div class="search-container">
-    <input type="text" id="search-input" placeholder="Search pins...">
-  </div>
-
-  <!-- Pinterest-style container -->
+  <!-- Pinterest-style pin container -->
   <div id="pin-container" class="pin-container"></div>
-
-  <!-- Fullscreen view -->
-  <div id="fullscreen" class="fullscreen">
-    <button id="back-btn">Back</button>
-    <div id="fullscreen-content"></div>
-  </div>
 
   <!-- Add Pin Modal -->
   <div id="modal" class="modal">
     <div class="modal-content">
       <span id="close-modal" class="close">&times;</span>
       <h2>Add a Pin</h2>
+
       <form id="add-pin-form">
         <input type="text" id="pin-title" placeholder="Pin Title" required>
+
         <select id="pin-type" required>
           <option value="image">Image</option>
-          <option value="video">Video (YouTube URL)</option>
-          <option value="text">Text Only</option>
+          <option value="video">Video (YouTube)</option>
+          <option value="text">Text</option>
         </select>
-        <input type="url" id="pin-url" placeholder="Image or Video URL">
-        <textarea id="pin-text" placeholder="Write your text here" style="display:none;"></textarea>
+
+        <input type="url" id="pin-url" placeholder="Image / Video URL">
+
+        <textarea id="pin-text" placeholder="Write something cute..." style="display:none;"></textarea>
+
         <button type="submit">Submit Pin</button>
       </form>
     </div>
   </div>
 
+  <!-- JS -->
   <script src="main.js"></script>
+
 </body>
 </html>
-<!-- Top bar wrapper -->
-<div class="top-bar">
-  <button id="password-btn" class="password-btn" title="Owner Only">OWNER</button>
-  <input type="text" id="search-input" placeholder="Search pins...">
-  <button id="plus-btn" class="circle-btn" title="Add Pin">+</button>
-</div>
 
