@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeModal = document.getElementById("close-modal");
   const addForm = document.getElementById("add-pin-form");
 
+  // Open/close modal
   plusBtn.addEventListener("click", () => modal.style.display = "block");
   closeModal.addEventListener("click", () => modal.style.display = "none");
   window.addEventListener("click", (e) => { if(e.target == modal) modal.style.display="none"; });
@@ -17,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const title = document.getElementById("pin-title").value;
     const url = document.getElementById("pin-url").value;
     const type = document.getElementById("pin-type").value;
-    const id = Date.now(); // unique ID
+    const id = Date.now();
 
     let requests = JSON.parse(localStorage.getItem("pinRequests") || "[]");
     requests.push({ id, title, url, type, approved: false });
@@ -28,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.style.display = "none";
   });
 
-  // Owner check
+  // Owner PIN check
   passwordBtn.addEventListener("click", () => {
     const pin = prompt("Enter owner PIN:");
     if(pin === "PFUDOR") window.location.href = "owner.html";
@@ -65,6 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadApprovedPins(); // initial load
 
+  // Listen for changes in localStorage (from owner.html)
+  window.addEventListener("storage", (e) => {
+    if(e.key === "pinRequests") {
+      loadApprovedPins();
+    }
+  });
+
   // Helper
   function getYouTubeID(url){
     const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
@@ -72,3 +80,4 @@ document.addEventListener("DOMContentLoaded", () => {
     return match && match[1].length == 11 ? match[1] : null;
   }
 });
+
