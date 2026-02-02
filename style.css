@@ -45,7 +45,7 @@ h1 { color: #FF6FA1; }
   color: white;
   cursor: pointer;
   transition: 0.2s;
-  z-index: 10; /* buttons above search bar */
+  z-index: 5;
 }
 .circle-btn:hover { transform: scale(1.1); }
 
@@ -59,43 +59,15 @@ h1 { color: #FF6FA1; }
   border: none;
   cursor: pointer;
   transition: 0.2s;
-  z-index: 10; /* buttons above search bar */
+  z-index: 5;
 }
 .password-btn:hover { transform: scale(1.1); }
-
-/* ------------------ Search Bar ------------------ */
-.search-container {
-  width: 100%;
-  padding: 15px;
-  background-color: #FFC5D3;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 5; /* behind buttons */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-#search-input {
-  width: 90%;
-  max-width: 500px;
-  padding: 10px 15px;
-  border-radius: 25px;
-  border: 1px solid #FF9AC5;
-  outline: none;
-  font-size: 16px;
-  background-color: #FFE3EB;
-  color: #333;
-}
-
-#search-input::placeholder {
-  color: #FF6FA1;
-}
 
 /* ------------------ Pin Container ------------------ */
 .pin-container {
   column-count: 3;
   column-gap: 15px;
-  margin-top: 80px; /* push down for search bar */
+  margin-top: 100px;
   padding: 0 15px;
 }
 .pin {
@@ -110,7 +82,7 @@ h1 { color: #FF6FA1; }
 }
 .pin:hover { transform: scale(1.03); }
 .pin img { width: 100%; border-radius: 10px; }
-.pin p { margin: 5px 0; }
+.pin p, .pin h3 { margin: 5px 0; }
 
 /* ------------------ Modal ------------------ */
 .modal {
@@ -140,7 +112,7 @@ h1 { color: #FF6FA1; }
   cursor: pointer;
 }
 .close:hover { color: black; }
-.modal input, .modal select, .modal textarea {
+.modal input, .modal select {
   width: 90%;
   padding: 8px;
   margin: 8px 0;
@@ -157,21 +129,6 @@ h1 { color: #FF6FA1; }
   transition: 0.3s;
 }
 .modal button:hover { transform: scale(1.05); }
-
-/* ------------------ Fullscreen ------------------ */
-.fullscreen {
-  display: none;
-  position: fixed;
-  z-index: 20;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(255, 197, 211, 0.95);
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  overflow-y: auto;
-  padding: 20px;
-}
 
 /* ------------------ Owner Page ------------------ */
 .request-card {
@@ -196,3 +153,59 @@ h1 { color: #FF6FA1; }
 }
 .approve-btn { background-color: #28a745; }
 .reject-btn { background-color: #dc3545; }
+
+/* ------------------ Fullscreen ------------------ */
+#fullscreen {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.9);
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 100;
+  overflow: auto;
+  color: white;
+  text-align: center;
+}
+#fullscreen img {
+  max-width: 90vw;
+  max-height: 80vh;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+#fullscreen p, #fullscreen h2 {
+  margin: 10px 0;
+}
+#fullscreen button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #FF6FA1;
+  color: white;
+  font-size: 16px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 101;
+}
+
+/* ------------------ Video Wrapper (responsive) ------------------ */
+.video-wrapper {
+  position: relative;
+  width: 90vw;
+  padding-bottom: 56.25%; /* 16:9 ratio */
+  height: 0;
+  margin: 0 auto;
+}
+.video-wrapper iframe {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
