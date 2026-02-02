@@ -2,21 +2,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const plusBtn = document.getElementById("plus-btn");
   const passwordBtn = document.getElementById("password-btn");
   const container = document.getElementById("pin-container");
-
   const modal = document.getElementById("modal");
   const closeModal = document.getElementById("close-modal");
   const addForm = document.getElementById("add-pin-form");
   const pinType = document.getElementById("pin-type");
   const pinURL = document.getElementById("pin-url");
   const pinText = document.getElementById("pin-text");
-
+  const searchInput = document.getElementById("search-input");
   const fullscreen = document.getElementById("fullscreen");
   const fullscreenContent = document.getElementById("fullscreen-content");
   const backBtn = document.getElementById("back-btn");
 
-  const searchInput = document.getElementById("search-input");
+  // Modal open/close
+  plusBtn.addEventListener("click", () => modal.style.display = "block");
+  closeModal.addEventListener("click", () => modal.style.display = "none");
+  window.addEventListener("click", (e) => { if(e.target == modal) modal.style.display = "none"; });
 
-  // Show/hide text/URL inputs based on type
+  // Show/hide URL vs Text input based on type
   pinType.addEventListener("change", () => {
     if(pinType.value === "text"){
       pinURL.style.display = "none";
@@ -26,11 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
       pinText.style.display = "none";
     }
   });
-
-  // Modal open/close
-  plusBtn.addEventListener("click", () => modal.style.display = "block");
-  closeModal.addEventListener("click", () => modal.style.display = "none");
-  window.addEventListener("click", (e) => { if(e.target == modal) modal.style.display="none"; });
 
   // Submit new pin
   addForm.addEventListener("submit", (e) => {
@@ -42,11 +39,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const id = Date.now();
     let requests = JSON.parse(localStorage.getItem("pinRequests") || "[]");
-    requests.push({ id, title, type, url, text, approved:false });
+    requests.push({ id, title, type, url, text, approved: false });
     localStorage.setItem("pinRequests", JSON.stringify(requests));
 
     alert("Pin request sent for approval!");
     addForm.reset();
+    pinURL.style.display = "block";
+    pinText.style.display = "none";
     modal.style.display = "none";
   });
 
@@ -57,71 +56,67 @@ document.addEventListener("DOMContentLoaded", () => {
     else alert("WRONG PIN!");
   });
 
-  // Load pins (filtered optional)
-  function loadApprovedPins(filter=""){
+  // Load pins
+  function loadPins() {
     container.innerHTML = "";
-    const pins = JSON.parse(localStorage.getItem("pinRequests") || "[]")
-                  .filter(p => p.approved)
-                  .filter(p => p.title.toLowerCase().includes(filter.toLowerCase()) ||
-                               (p.text && p.text.toLowerCase().includes(filter.toLowerCase()))
-                  );
+    const pins = JSON.parse(localStorage.getItem("pinRequests") || "[]").filter(p => p.approved);
 
-    pins.forEach((p, idx) => {
+    const query = searchInput.value.toLowerCase();
+
+    pins.forEach(p => {
+      if(query && !p.title.toLowerCase().includes(query) && !(p.text && p.text.toLowerCase().includes(query))) return;
+
       const div = document.createElement("div");
       div.className = "pin";
 
       if(p.type === "image"){
         div.innerHTML = `<img src="${p.url}" alt="${p.title}"><p>${p.title}</p>`;
       } else if(p.type === "video"){
-        const videoId = getYouTubeID(p.url);
-        if(videoId){
-          div.innerHTML = `<iframe width="100%" height="200"
-                          src="https://www.youtube.com/embed/${videoId}"
-                          frameborder="0" allowfullscreen></iframe>
-                          <p>${p.title}</p>`;
+        const vid = getYouTubeID(p.url);
+        if(vid){
+          div.innerHTML = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen></iframe><p>${p.title}</p>`;
         } else {
           div.innerHTML = `<p>Invalid video URL: ${p.title}</p>`;
         }
       } else if(p.type === "text"){
-        div.innerHTML = `<p><strong>${p.title}</strong></p><p>${p.text}</p>`;
+        div.innerHTML = `<h3>${p.title}</h3><p>${p.text}</p>`;
       }
 
-      container.appendChild(div);
-
-      // Fullscreen click
+      // Click for fullscreen
       div.addEventListener("click", () => {
         fullscreenContent.innerHTML = "";
         if(p.type === "image"){
-          fullscreenContent.innerHTML = `<img src="${p.url}" style="width:100%; border-radius:10px;"><p>${p.title}</p>`;
+          fullscreenContent.innerHTML = `<img src="${p.url}" style="max-width:90%; max-height:80vh;"><p>${p.title}</p>`;
         } else if(p.type === "video"){
-          const videoId = getYouTubeID(p.url);
-          fullscreenContent.innerHTML = `<iframe width="100%" height="300" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe><p>${p.title}</p>`;
+          const vid = getYouTubeID(p.url);
+          fullscreenContent.innerHTML = `<iframe width="80%" height="400" src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen></iframe><p>${p.title}</p>`;
         } else if(p.type === "text"){
-          fullscreenContent.innerHTML = `<p><strong>${p.title}</strong></p><p>${p.text}</p>`;
+          fullscreenContent.innerHTML = `<h2>${p.title}</h2><p>${p.text}</p>`;
         }
         fullscreen.style.display = "flex";
       });
+
+      container.appendChild(div);
     });
   }
 
+  // Fullscreen back
   backBtn.addEventListener("click", () => fullscreen.style.display = "none");
 
-  // Search bar functionality
-  searchInput.addEventListener("input", () => {
-    loadApprovedPins(searchInput.value);
-  });
+  // Search filter
+  searchInput.addEventListener("input", loadPins);
 
-  // Listen for owner changes
+  loadPins(); // initial load
+
+  // Listen for changes from owner.html
   window.addEventListener("storage", (e) => {
-    if(e.key === "pinRequests") loadApprovedPins(searchInput.value);
+    if(e.key === "pinRequests") loadPins();
   });
 
+  // Helper
   function getYouTubeID(url){
     const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
-    return match && match[1].length === 11 ? match[1] : null;
+    return match && match[1].length == 11 ? match[1] : null;
   }
-
-  loadApprovedPins();
 });
-
