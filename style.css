@@ -1,37 +1,22 @@
-/* ------------------ General ------------------ */
-body.front-page, body.main-page, body.owner-page {
+/* ------------------ GLOBAL ------------------ */
+* {
+  box-sizing: border-box;
+}
+
+body.front-page,
+body.main-page,
+body.owner-page {
   margin: 0;
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, sans-serif;
   background-color: #FFC5D3;
   text-align: center;
 }
 
-h1 { color: #FF6FA1; }
-
-/* ------------------ Landing Page ------------------ */
-.welcome-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+h1, h2, h3 {
+  color: #FF6FA1;
 }
 
-.come-in-btn {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 15px 30px;
-  background-color: #FF9AC5;
-  color: white;
-  font-size: 18px;
-  border-radius: 25px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.come-in-btn:hover { transform: scale(1.05); }
-
-/* ------------------ Buttons ------------------ */
+/* ------------------ BUTTONS ------------------ */
 .circle-btn {
   position: fixed;
   top: 20px;
@@ -44,10 +29,8 @@ h1 { color: #FF6FA1; }
   background-color: #FF6FA1;
   color: white;
   cursor: pointer;
-  transition: 0.2s;
   z-index: 5;
 }
-.circle-btn:hover { transform: scale(1.1); }
 
 .password-btn {
   position: fixed;
@@ -57,34 +40,57 @@ h1 { color: #FF6FA1; }
   background-color: #FF9AC5;
   color: white;
   border: none;
+  border-radius: 10px;
   cursor: pointer;
-  transition: 0.2s;
   z-index: 5;
 }
-.password-btn:hover { transform: scale(1.1); }
 
-/* ------------------ Pin Container ------------------ */
+/* ------------------ PIN GRID ------------------ */
 .pin-container {
   column-count: 3;
   column-gap: 15px;
-  margin-top: 100px;
-  padding: 0 15px;
+  padding: 100px 15px 20px;
 }
+
+@media (max-width: 900px) {
+  .pin-container { column-count: 2; }
+}
+
+@media (max-width: 500px) {
+  .pin-container { column-count: 1; }
+}
+
 .pin {
   display: inline-block;
   width: 100%;
-  margin: 0 0 15px;
-  background-color: white;
-  padding: 5px;
-  border-radius: 10px;
-  transition: transform 0.3s;
-  cursor: pointer;
+  background: white;
+  margin-bottom: 15px;
+  padding: 8px;
+  border-radius: 12px;
+  break-inside: avoid;
+  transition: transform 0.2s;
 }
-.pin:hover { transform: scale(1.03); }
-.pin img { width: 100%; border-radius: 10px; }
-.pin p, .pin h3 { margin: 5px 0; }
 
-/* ------------------ Modal ------------------ */
+.pin:hover {
+  transform: scale(1.03);
+}
+
+.pin img,
+.pin iframe {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.pin iframe {
+  height: 200px;
+}
+
+.pin p {
+  margin: 6px 0;
+  color: #333;
+}
+
+/* ------------------ MODAL ------------------ */
 .modal {
   display: none;
   position: fixed;
@@ -93,46 +99,52 @@ h1 { color: #FF6FA1; }
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.5);
 }
+
 .modal-content {
-  background-color: #fff;
+  background: white;
   margin: 15% auto;
   padding: 20px;
   width: 90%;
   max-width: 400px;
   border-radius: 15px;
-  text-align: center;
 }
+
 .close {
-  color: #aaa;
   float: right;
   font-size: 28px;
   cursor: pointer;
 }
-.close:hover { color: black; }
-.modal input, .modal select {
+
+.modal input,
+.modal textarea,
+.modal select {
   width: 90%;
-  padding: 8px;
   margin: 8px 0;
+  padding: 8px;
   border-radius: 8px;
   border: 1px solid #ccc;
 }
+
+.modal textarea {
+  resize: none;
+  height: 80px;
+}
+
 .modal button {
+  margin-top: 10px;
   padding: 10px 20px;
-  background-color: #FF6FA1;
+  background: #FF6FA1;
   color: white;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition: 0.3s;
 }
-.modal button:hover { transform: scale(1.05); }
 
-/* ------------------ Owner Page ------------------ */
+/* ------------------ OWNER PANEL ------------------ */
 .request-card {
-  background: #fff;
+  background: white;
   padding: 10px;
   margin: 10px auto;
   width: 90%;
@@ -142,92 +154,22 @@ h1 { color: #FF6FA1; }
   justify-content: space-between;
   align-items: center;
 }
-.request-card p { margin: 0; }
-.approve-btn, .reject-btn {
-  margin-left: 5px;
-  padding: 5px 10px;
+
+.approve-btn {
+  background: #28a745;
+  color: white;
   border: none;
+  padding: 5px 10px;
   border-radius: 8px;
   cursor: pointer;
-  color: white;
 }
-.approve-btn { background-color: #28a745; }
-.reject-btn { background-color: #dc3545; }
 
-/* ------------------ Fullscreen ------------------ */
-#fullscreen {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.9);
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 100;
-  overflow: auto;
+.reject-btn {
+  background: #dc3545;
   color: white;
-  text-align: center;
-}
-#fullscreen img {
-  max-width: 90vw;
-  max-height: 80vh;
-  object-fit: contain;
-  margin-bottom: 10px;
-}
-#fullscreen p, #fullscreen h2 {
-  margin: 10px 0;
-}
-#fullscreen button {
-  padding: 10px 20px;
   border: none;
-  border-radius: 10px;
+  padding: 5px 10px;
+  border-radius: 8px;
   cursor: pointer;
-  background: #FF6FA1;
-  color: white;
-  font-size: 16px;
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 101;
 }
 
-/* ------------------ Video Wrapper (responsive) ------------------ */
-.video-wrapper {
-  position: relative;
-  width: 90vw;
-  padding-bottom: 56.25%; /* 16:9 ratio */
-  height: 0;
-  margin: 0 auto;
-}
-.video-wrapper iframe {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-}
-/* Top bar layout */
-.top-bar {
-  position: fixed;
-  top: 10px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 15px;
-  z-index: 20;
-}
-
-/* Adjust search input */
-#search-input {
-  flex: 1;
-  margin: 0 10px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-}
