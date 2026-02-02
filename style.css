@@ -1,34 +1,197 @@
-/* Fullscreen styles */
-.fullscreen {
-  position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background-color: rgba(0,0,0,0.95);
+/* ------------------ General ------------------ */
+body.front-page, body.main-page, body.owner-page {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #FFC5D3;
+  text-align: center;
+}
+
+h1 { color: #FF6FA1; }
+
+/* ------------------ Landing Page ------------------ */
+.welcome-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  z-index: 20;
+  align-items: center;
+  height: 100vh;
+}
+
+.come-in-btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 15px 30px;
+  background-color: #FF9AC5;
   color: white;
-  padding: 20px;
-  overflow: auto;
+  font-size: 18px;
+  border-radius: 25px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.3s;
 }
+.come-in-btn:hover { transform: scale(1.05); }
 
-.back-btn {
-  position: absolute;
-  top:20px;
-  left:20px;
+/* ------------------ Buttons ------------------ */
+.circle-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  font-size: 36px;
+  border-radius: 50%;
+  border: none;
+  background-color: #FF6FA1;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.circle-btn:hover { transform: scale(1.1); }
+
+.password-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
   padding: 10px 20px;
-  font-size: 16px;
-  border:none;
-  border-radius:10px;
-  background-color:#FF6FA1;
-  color:white;
-  cursor:pointer;
+  background-color: #FF9AC5;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.password-btn:hover { transform: scale(1.1); }
+
+/* ------------------ Search Bar ------------------ */
+.search-container {
+  width: 100%;
+  padding: 15px;
+  background-color: #FFC5D3;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-.fullscreen-content {
-  max-width:90%;
-  max-height:90%;
-  text-align:center;
+#search-input {
+  width: 90%;
+  max-width: 500px;
+  padding: 10px 15px;
+  border-radius: 25px;
+  border: 1px solid #FF9AC5;
+  outline: none;
+  font-size: 16px;
+  background-color: #FFE3EB;
+  color: #333;
 }
+
+#search-input::placeholder {
+  color: #FF6FA1;
+}
+
+/* ------------------ Pin Container ------------------ */
+.pin-container {
+  column-count: 3;
+  column-gap: 15px;
+  margin-top: 80px; /* push down for search bar */
+  padding: 0 15px;
+}
+.pin {
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 15px;
+  background-color: white;
+  padding: 5px;
+  border-radius: 10px;
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+.pin:hover { transform: scale(1.03); }
+.pin img { width: 100%; border-radius: 10px; }
+.pin p { margin: 5px 0; }
+
+/* ------------------ Modal ------------------ */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+.modal-content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 15px;
+  text-align: center;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+}
+.close:hover { color: black; }
+.modal input, .modal select, .modal textarea {
+  width: 90%;
+  padding: 8px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+.modal button {
+  padding: 10px 20px;
+  background-color: #FF6FA1;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.modal button:hover { transform: scale(1.05); }
+
+/* ------------------ Fullscreen ------------------ */
+.fullscreen {
+  display: none;
+  position: fixed;
+  z-index: 20;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(255, 197, 211, 0.95);
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* ------------------ Owner Page ------------------ */
+.request-card {
+  background: #fff;
+  padding: 10px;
+  margin: 10px auto;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.request-card p { margin: 0; }
+.approve-btn, .reject-btn {
+  margin-left: 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+}
+.approve-btn { background-color: #28a745; }
+.reject-btn { background-color: #dc3545; }
+
