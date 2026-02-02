@@ -18,11 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    requests.forEach((r, i) => {
+    requests.forEach((r) => {
       const card = document.createElement("div");
       card.className = "request-card";
       card.innerHTML = `
-        <p><strong>${r.date}</strong>: ${r.title}</p>
+        <p><strong>${r.date}</strong>: ${r.title} (${r.type})</p>
         <div>
           <a href="${r.url}" target="_blank">View</a>
           <button class="approve-btn">Approve</button>
@@ -34,21 +34,28 @@ document.addEventListener("DOMContentLoaded", () => {
       // Approve button
       card.querySelector(".approve-btn").addEventListener("click", () => {
         const allRequests = getRequests();
-        allRequests[i].approved = true;
-        saveRequests(allRequests);
-        renderRequests(); // re-render after approval
+        const idx = allRequests.findIndex(req => req.date === r.date);
+        if(idx > -1){
+          allRequests[idx].approved = true;
+          saveRequests(allRequests);
+          renderRequests();
+          alert("Pin approved!");
+        }
       });
 
       // Reject button
       card.querySelector(".reject-btn").addEventListener("click", () => {
         const allRequests = getRequests();
-        allRequests.splice(i, 1);
-        saveRequests(allRequests);
-        renderRequests(); // re-render after rejection
+        const idx = allRequests.findIndex(req => req.date === r.date);
+        if(idx > -1){
+          allRequests.splice(idx, 1);
+          saveRequests(allRequests);
+          renderRequests();
+          alert("Pin rejected!");
+        }
       });
     });
   }
 
   renderRequests();
 });
-
