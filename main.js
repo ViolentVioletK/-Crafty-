@@ -61,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function loadApprovedPins(){
     container.innerHTML = "";
     const pins = JSON.parse(localStorage.getItem("pinRequests") || "[]").filter(p => p.approved);
+
     pins.forEach(p => {
       const div = document.createElement("div");
       div.className = "pin";
@@ -78,55 +79,25 @@ document.addEventListener("DOMContentLoaded", () => {
           div.innerHTML = `<p>Invalid video URL: ${p.title}</p>`;
         }
       } else if(p.type === "text"){
-        div.innerHTML = `<h3>${p.title}</h3><p>${p.text}</p>`;
+        div.innerHTML = `<p><strong>${p.title}</strong></p><p>${p.text}</p>`;
       }
 
       container.appendChild(div);
     });
-    enableFullscreen();
-  }
 
-  // Enable click to fullscreen
-  function enableFullscreen(){
-    document.querySelectorAll(".pin").forEach(pin => {
+    // Add fullscreen click
+    document.querySelectorAll(".pin").forEach((pin, idx) => {
       pin.addEventListener("click", () => {
-        const idx = Array.from(container.children).indexOf(pin);
-        const pins = JSON.parse(localStorage.getItem("pinRequests") || "[]").filter(p => p.approved);
         const p = pins[idx];
-
         fullscreenContent.innerHTML = "";
 
         if(p.type === "image"){
-          const img = document.createElement("img");
-          img.src = p.url;
-          img.style.maxWidth = "100%";
-          img.style.maxHeight = "80vh";
-          fullscreenContent.appendChild(img);
-          const title = document.createElement("p");
-          title.textContent = p.title;
-          fullscreenContent.appendChild(title);
+          fullscreenContent.innerHTML = `<img src="${p.url}" style="width:100%; border-radius:10px;"><p>${p.title}</p>`;
         } else if(p.type === "video"){
           const videoId = getYouTubeID(p.url);
-          if(videoId){
-            const iframe = document.createElement("iframe");
-            iframe.src = `https://www.youtube.com/embed/${videoId}`;
-            iframe.width = "100%";
-            iframe.height = "400";
-            iframe.allowFullscreen = true;
-            fullscreenContent.appendChild(iframe);
-            const title = document.createElement("p");
-            title.textContent = p.title;
-            fullscreenContent.appendChild(title);
-          } else {
-            fullscreenContent.textContent = "Invalid video URL";
-          }
+          fullscreenContent.innerHTML = `<iframe width="100%" height="300" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe><p>${p.title}</p>`;
         } else if(p.type === "text"){
-          const title = document.createElement("h2");
-          title.textContent = p.title;
-          const text = document.createElement("p");
-          text.textContent = p.text;
-          fullscreenContent.appendChild(title);
-          fullscreenContent.appendChild(text);
+          fullscreenContent.innerHTML = `<p><strong>${p.title}</strong></p><p>${p.text}</p>`;
         }
 
         fullscreen.style.display = "flex";
@@ -136,12 +107,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   backBtn.addEventListener("click", () => fullscreen.style.display = "none");
 
-  // Listen for changes from owner.html
+  // Listen for owner changes
   window.addEventListener("storage", (e) => {
     if(e.key === "pinRequests") loadApprovedPins();
   });
 
-  // Helper
   function getYouTubeID(url){
     const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
