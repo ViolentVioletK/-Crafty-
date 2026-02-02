@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crafty - Main</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="main-page">
+
+  <!-- Plus Button top-right -->
+  <button id="plus-btn" class="circle-btn" title="Add Pin">+</button>
+
+  <!-- Password Button top-left -->
+  <button id="password-btn" class="password-btn" title="Owner Only">OWNER</button>
+
+  <!-- Pinterest-style container -->
+  <div id="pin-container" class="pin-container"></div>
+
+  <!-- Add Pin Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span id="close-modal" class="close">&times;</span>
+      <h2>Add a Pin</h2>
+      <form id="add-pin-form">
+        <input type="text" id="pin-title" placeholder="Pin Title" required>
+        <input type="url" id="pin-url" placeholder="Image URL" required>
+        <button type="submit">Submit Pin</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
