@@ -2,79 +2,99 @@ document.addEventListener("DOMContentLoaded", () => {
   const plusBtn = document.getElementById("plus-btn");
   const passwordBtn = document.getElementById("password-btn");
   const container = document.getElementById("pin-container");
+
+  // Modal elements
   const modal = document.getElementById("modal");
   const closeModal = document.getElementById("close-modal");
   const addForm = document.getElementById("add-pin-form");
-  const pinType = document.getElementById("pin-type");
-  const pinURL = document.getElementById("pin-url");
-  const pinText = document.getElementById("pin-text");
-  const searchInput = document.getElementById("search-input");
-  const fullscreen = document.getElementById("fullscreen");
-  const fullscreenContent = document.getElementById("fullscreen-content");
-  const backBtn = document.getElementById("back-btn");
 
-  // Modal open/close
+  // Fullscreen elements
+  const fullscreen = document.createElement("div");
+  fullscreen.id = "fullscreen";
+  fullscreen.style.cssText = `
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100vw;
+    height:100vh;
+    background:rgba(0,0,0,0.9);
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    z-index:100;
+    overflow:auto;
+    color:white;
+    text-align:center;
+  `;
+  const fullscreenContent = document.createElement("div");
+  const fullscreenBack = document.createElement("button");
+  fullscreenBack.textContent = "Back";
+  fullscreenBack.style.cssText = `
+    position:fixed;
+    top:20px;
+    right:20px;
+    padding:10px 20px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:#FF6FA1;
+    color:white;
+    font-size:16px;
+    z-index:101;
+  `;
+  fullscreenBack.addEventListener("click", () => {
+    fullscreen.style.display = "none";
+  });
+  fullscreen.appendChild(fullscreenContent);
+  fullscreen.appendChild(fullscreenBack);
+  document.body.appendChild(fullscreen);
+
+  // Open/close modal
   plusBtn.addEventListener("click", () => modal.style.display = "block");
   closeModal.addEventListener("click", () => modal.style.display = "none");
-  window.addEventListener("click", (e) => { if(e.target == modal) modal.style.display = "none"; });
+  window.addEventListener("click", (e) => { if(e.target == modal) modal.style.display="none"; });
 
-  // Show/hide URL vs Text input based on type
-  pinType.addEventListener("change", () => {
-    if(pinType.value === "text"){
-      pinURL.style.display = "none";
-      pinText.style.display = "block";
-    } else {
-      pinURL.style.display = "block";
-      pinText.style.display = "none";
-    }
-  });
-
-  // Submit new pin
+  // Submit new pin request
   addForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const title = document.getElementById("pin-title").value;
-    const type = pinType.value;
-    const url = pinURL.value;
-    const text = pinText.value;
-
-    const id = Date.now();
+    const url = document.getElementById("pin-url").value;
+    const type = document.getElementById("pin-type").value;
+    const textContent = type === "text" ? document.getElementById("pin-url").value : "";
+    const id = Date.now(); // unique ID
     let requests = JSON.parse(localStorage.getItem("pinRequests") || "[]");
-    requests.push({ id, title, type, url, text, approved: false });
+    requests.push({ id, title, url, type, text: textContent, approved: false });
     localStorage.setItem("pinRequests", JSON.stringify(requests));
-
     alert("Pin request sent for approval!");
     addForm.reset();
-    pinURL.style.display = "block";
-    pinText.style.display = "none";
     modal.style.display = "none";
   });
 
-  // Owner check
+  // Owner PIN check
   passwordBtn.addEventListener("click", () => {
     const pin = prompt("Enter owner PIN:");
     if(pin === "PFUDOR") window.location.href = "owner.html";
     else alert("WRONG PIN!");
   });
 
-  // Load pins
-  function loadPins() {
+  // Load approved pins
+  function loadApprovedPins(){
     container.innerHTML = "";
     const pins = JSON.parse(localStorage.getItem("pinRequests") || "[]").filter(p => p.approved);
-
-    const query = searchInput.value.toLowerCase();
-
     pins.forEach(p => {
-      if(query && !p.title.toLowerCase().includes(query) && !(p.text && p.text.toLowerCase().includes(query))) return;
-
       const div = document.createElement("div");
       div.className = "pin";
 
       if(p.type === "image"){
         div.innerHTML = `<img src="${p.url}" alt="${p.title}"><p>${p.title}</p>`;
       } else if(p.type === "video"){
-        const vid = getYouTubeID(p.url);
-        if(vid){
-          div.innerHTML = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen></iframe><p>${p.title}</p>`;
+        const videoId = getYouTubeID(p.url);
+        if(videoId){
+          div.innerHTML = `
+            <iframe width="100%" height="200" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+            <p>${p.title}</p>
+          `;
         } else {
           div.innerHTML = `<p>Invalid video URL: ${p.title}</p>`;
         }
@@ -82,14 +102,19 @@ document.addEventListener("DOMContentLoaded", () => {
         div.innerHTML = `<h3>${p.title}</h3><p>${p.text}</p>`;
       }
 
-      // Click for fullscreen
+      // Fullscreen click
       div.addEventListener("click", () => {
         fullscreenContent.innerHTML = "";
         if(p.type === "image"){
-          fullscreenContent.innerHTML = `<img src="${p.url}" style="max-width:90%; max-height:80vh;"><p>${p.title}</p>`;
+          fullscreenContent.innerHTML = `<img src="${p.url}" style="max-width:90vw; max-height:80vh; object-fit:contain;"><p>${p.title}</p>`;
         } else if(p.type === "video"){
           const vid = getYouTubeID(p.url);
-          fullscreenContent.innerHTML = `<iframe width="80%" height="400" src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen></iframe><p>${p.title}</p>`;
+          fullscreenContent.innerHTML = `
+            <div class="video-wrapper">
+              <iframe src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <p>${p.title}</p>
+          `;
         } else if(p.type === "text"){
           fullscreenContent.innerHTML = `<h2>${p.title}</h2><p>${p.text}</p>`;
         }
@@ -100,20 +125,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Fullscreen back
-  backBtn.addEventListener("click", () => fullscreen.style.display = "none");
+  loadApprovedPins(); // initial load
 
-  // Search filter
-  searchInput.addEventListener("input", loadPins);
-
-  loadPins(); // initial load
-
-  // Listen for changes from owner.html
+  // Listen for localStorage changes (e.g., approval from owner)
   window.addEventListener("storage", (e) => {
-    if(e.key === "pinRequests") loadPins();
+    if(e.key === "pinRequests") loadApprovedPins();
   });
 
-  // Helper
+  // Helper function to extract YouTube video ID
   function getYouTubeID(url){
     const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
