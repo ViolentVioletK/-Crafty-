@@ -8,19 +8,25 @@
 </head>
 <body class="main-page">
 
-  <!-- Search bar -->
-  <div class="search-container">
-    <input type="text" id="search-input" placeholder="Search pins..." />
-  </div>
-
   <!-- Plus Button top-right -->
   <button id="plus-btn" class="circle-btn" title="Add Pin">+</button>
 
   <!-- Password Button top-left -->
   <button id="password-btn" class="password-btn" title="Owner Only">OWNER</button>
 
+  <!-- Search Bar -->
+  <div class="search-container">
+    <input type="text" id="search-input" placeholder="Search pins...">
+  </div>
+
   <!-- Pinterest-style container -->
   <div id="pin-container" class="pin-container"></div>
+
+  <!-- Fullscreen view -->
+  <div id="fullscreen" class="fullscreen">
+    <button id="back-btn">Back</button>
+    <div id="fullscreen-content"></div>
+  </div>
 
   <!-- Add Pin Modal -->
   <div id="modal" class="modal">
@@ -32,21 +38,16 @@
         <select id="pin-type" required>
           <option value="image">Image</option>
           <option value="video">Video (YouTube URL)</option>
-          <option value="text">Text</option>
+          <option value="text">Text Only</option>
         </select>
         <input type="url" id="pin-url" placeholder="Image or Video URL">
-        <textarea id="pin-text" placeholder="Text content" style="display:none;"></textarea>
+        <textarea id="pin-text" placeholder="Write your text here" style="display:none;"></textarea>
         <button type="submit">Submit Pin</button>
       </form>
     </div>
   </div>
 
-  <!-- Fullscreen view for pins -->
-  <div id="fullscreen" class="fullscreen" style="display:none;">
-    <button id="back-btn" class="circle-btn" style="position:fixed; top:20px; left:20px;">&#8592;</button>
-    <div id="fullscreen-content" class="pin"></div>
-  </div>
-
   <script src="main.js"></script>
 </body>
 </html>
+
