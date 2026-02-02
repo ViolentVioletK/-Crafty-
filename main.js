@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const fullscreenContent = document.getElementById("fullscreen-content");
   const backBtn = document.getElementById("back-btn");
 
+  const searchInput = document.getElementById("search-input");
+
   // Show/hide text/URL inputs based on type
   pinType.addEventListener("change", () => {
     if(pinType.value === "text"){
@@ -25,10 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Open modal
+  // Modal open/close
   plusBtn.addEventListener("click", () => modal.style.display = "block");
-
-  // Close modal
   closeModal.addEventListener("click", () => modal.style.display = "none");
   window.addEventListener("click", (e) => { if(e.target == modal) modal.style.display="none"; });
 
@@ -57,12 +57,16 @@ document.addEventListener("DOMContentLoaded", () => {
     else alert("WRONG PIN!");
   });
 
-  // Load approved pins
-  function loadApprovedPins(){
+  // Load pins (filtered optional)
+  function loadApprovedPins(filter=""){
     container.innerHTML = "";
-    const pins = JSON.parse(localStorage.getItem("pinRequests") || "[]").filter(p => p.approved);
+    const pins = JSON.parse(localStorage.getItem("pinRequests") || "[]")
+                  .filter(p => p.approved)
+                  .filter(p => p.title.toLowerCase().includes(filter.toLowerCase()) ||
+                               (p.text && p.text.toLowerCase().includes(filter.toLowerCase()))
+                  );
 
-    pins.forEach(p => {
+    pins.forEach((p, idx) => {
       const div = document.createElement("div");
       div.className = "pin";
 
@@ -83,14 +87,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       container.appendChild(div);
-    });
 
-    // Add fullscreen click
-    document.querySelectorAll(".pin").forEach((pin, idx) => {
-      pin.addEventListener("click", () => {
-        const p = pins[idx];
+      // Fullscreen click
+      div.addEventListener("click", () => {
         fullscreenContent.innerHTML = "";
-
         if(p.type === "image"){
           fullscreenContent.innerHTML = `<img src="${p.url}" style="width:100%; border-radius:10px;"><p>${p.title}</p>`;
         } else if(p.type === "video"){
@@ -99,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if(p.type === "text"){
           fullscreenContent.innerHTML = `<p><strong>${p.title}</strong></p><p>${p.text}</p>`;
         }
-
         fullscreen.style.display = "flex";
       });
     });
@@ -107,9 +106,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   backBtn.addEventListener("click", () => fullscreen.style.display = "none");
 
+  // Search bar functionality
+  searchInput.addEventListener("input", () => {
+    loadApprovedPins(searchInput.value);
+  });
+
   // Listen for owner changes
   window.addEventListener("storage", (e) => {
-    if(e.key === "pinRequests") loadApprovedPins();
+    if(e.key === "pinRequests") loadApprovedPins(searchInput.value);
   });
 
   function getYouTubeID(url){
@@ -120,3 +124,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadApprovedPins();
 });
+
