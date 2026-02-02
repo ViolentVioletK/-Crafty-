@@ -3,145 +3,113 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordBtn = document.getElementById("password-btn");
   const container = document.getElementById("pin-container");
 
-  // Modal elements
   const modal = document.getElementById("modal");
   const closeModal = document.getElementById("close-modal");
   const addForm = document.getElementById("add-pin-form");
 
-  // Open/close modal
-  plusBtn.addEventListener("click", () => modal.style.display = "block");
-  closeModal.addEventListener("click", () => modal.style.display = "none");
-  window.addEventListener("click", (e) => { if(e.target === modal) modal.style.display="none"; });
+  const pinType = document.getElementById("pin-type");
+  const pinUrl = document.getElementById("pin-url");
+  const pinText = document.getElementById("pin-text");
 
-  // Submit new pin
+  /* ------------------ MODAL ------------------ */
+  plusBtn.onclick = () => modal.style.display = "block";
+  closeModal.onclick = () => modal.style.display = "none";
+  window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+
+  /* ------------------ TYPE SWITCH ------------------ */
+  pinType.addEventListener("change", () => {
+    if (pinType.value === "text") {
+      pinUrl.style.display = "none";
+      pinText.style.display = "block";
+      pinUrl.required = false;
+      pinText.required = true;
+    } else {
+      pinUrl.style.display = "block";
+      pinText.style.display = "none";
+      pinUrl.required = true;
+      pinText.required = false;
+    }
+  });
+
+  /* ------------------ ADD PIN ------------------ */
   addForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const title = document.getElementById("pin-title").value;
-    const url = document.getElementById("pin-url").value;
-    const type = document.getElementById("pin-type").value;
-    const id = Date.now(); // unique ID
 
-    let requests = JSON.parse(localStorage.getItem("pinRequests") || "[]");
-    requests.push({ id, title, url, type, approved: false });
-    localStorage.setItem("pinRequests", JSON.stringify(requests));
+    const newPin = {
+      id: Date.now(),
+      title: document.getElementById("pin-title").value,
+      type: pinType.value,
+      url: pinUrl.value,
+      text: pinText.value,
+      approved: false
+    };
 
-    alert("Pin request sent for approval!");
+    const pins = JSON.parse(localStorage.getItem("pinRequests")) || [];
+    pins.push(newPin);
+    localStorage.setItem("pinRequests", JSON.stringify(pins));
+
+    alert("Pin sent for approval!");
     addForm.reset();
+    pinText.style.display = "none";
+    pinUrl.style.display = "block";
     modal.style.display = "none";
-    loadApprovedPins();
   });
 
-  // Owner check
-  passwordBtn.addEventListener("click", () => {
+  /* ------------------ OWNER ------------------ */
+  passwordBtn.onclick = () => {
     const pin = prompt("Enter owner PIN:");
-    if(pin === "PFUDOR") window.location.href = "owner.html";
+    if (pin === "PFUDOR") window.location.href = "owner.html";
     else alert("WRONG PIN!");
-  });
+  };
 
-  // Fullscreen elements
-  const fullscreen = document.createElement("div");
-  fullscreen.id = "fullscreen";
-  fullscreen.style.display = "none";
-  document.body.appendChild(fullscreen);
-
-  const fullscreenContent = document.createElement("div");
-  fullscreenContent.id = "fullscreen-content";
-  fullscreenContent.style.display = "flex";
-  fullscreenContent.style.flexDirection = "column";
-  fullscreenContent.style.alignItems = "center";
-  fullscreen.appendChild(fullscreenContent);
-
-  const backBtn = document.createElement("button");
-  backBtn.textContent = "BACK";
-  backBtn.addEventListener("click", () => fullscreen.style.display = "none");
-  fullscreen.appendChild(backBtn);
-
-  // Search bar
-  const searchInput = document.createElement("input");
-  searchInput.type = "text";
-  searchInput.placeholder = "Search pins...";
-  searchInput.style.width = "80%";
-  searchInput.style.margin = "10px auto";
-  searchInput.style.padding = "8px";
-  searchInput.style.borderRadius = "8px";
-  searchInput.style.border = "1px solid #ccc";
-  document.body.insertBefore(searchInput, container);
-
-  searchInput.addEventListener("input", () => loadApprovedPins(searchInput.value));
-
-  // Load approved pins
-  function loadApprovedPins(filter="") {
+  /* ------------------ LOAD APPROVED PINS ------------------ */
+  function loadPins() {
     container.innerHTML = "";
-    const pins = JSON.parse(localStorage.getItem("pinRequests") || "[]")
-                  .filter(p => p.approved && p.title.toLowerCase().includes(filter.toLowerCase()));
+    const pins = JSON.parse(localStorage.getItem("pinRequests")) || [];
 
-    pins.forEach(p => {
+    pins.filter(p => p.approved).forEach(p => {
       const div = document.createElement("div");
       div.className = "pin";
 
-      if(p.type === "image") {
-        div.innerHTML = `<img src="${p.url}" alt="${p.title}"><p>${p.title}</p>`;
-        div.addEventListener("click", () => showFullscreen(p));
-      } 
-      else if(p.type === "video") {
-        const videoId = getYouTubeID(p.url);
-        if(videoId){
+      if (p.type === "image") {
+        div.innerHTML = `
+          <img src="${p.url}" alt="${p.title}">
+          <p>${p.title}</p>
+        `;
+      }
+
+      if (p.type === "video") {
+        const id = getYouTubeID(p.url);
+        if (id) {
           div.innerHTML = `
-            <div class="video-wrapper">
-              <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
-            </div>
+            <iframe src="https://www.youtube.com/embed/${id}"
+              frameborder="0" allowfullscreen></iframe>
             <p>${p.title}</p>
           `;
-          div.addEventListener("click", () => showFullscreen(p));
-        } else {
-          div.innerHTML = `<p>Invalid video URL: ${p.title}</p>`;
         }
-      } 
-      else if(p.type === "text") {
-        div.innerHTML = `<h3>${p.title}</h3><p>${p.url}</p>`;
-        div.addEventListener("click", () => showFullscreen(p));
+      }
+
+      if (p.type === "text") {
+        div.innerHTML = `
+          <h3>${p.title}</h3>
+          <p>${p.text}</p>
+        `;
       }
 
       container.appendChild(div);
     });
   }
 
-  // Fullscreen function
-  function showFullscreen(pin){
-    fullscreenContent.innerHTML = ""; // clear old
-    if(pin.type === "image"){
-      const img = document.createElement("img");
-      img.src = pin.url;
-      fullscreenContent.appendChild(img);
-    } 
-    else if(pin.type === "video"){
-      const wrapper = document.createElement("div");
-      wrapper.className = "video-wrapper";
-      wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${getYouTubeID(pin.url)}" frameborder="0" allowfullscreen></iframe>`;
-      fullscreenContent.appendChild(wrapper);
-    } 
-    else if(pin.type === "text"){
-      const title = document.createElement("h2");
-      title.textContent = pin.title;
-      const content = document.createElement("p");
-      content.textContent = pin.url;
-      fullscreenContent.appendChild(title);
-      fullscreenContent.appendChild(content);
-    }
-    fullscreen.style.display = "flex";
-  }
-
-  // Helper: extract YouTube ID
-  function getYouTubeID(url){
-    const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return match && match[1].length === 11 ? match[1] : null;
-  }
-
-  loadApprovedPins();
-
-  // Listen for localStorage updates (owner approval)
+  /* ------------------ STORAGE SYNC ------------------ */
   window.addEventListener("storage", (e) => {
-    if(e.key === "pinRequests") loadApprovedPins();
+    if (e.key === "pinRequests") loadPins();
   });
+
+  loadPins();
+
+  /* ------------------ YOUTUBE HELPER ------------------ */
+  function getYouTubeID(url) {
+    const match = url.match(/(?:youtu\.be\/|v=)([^&]+)/);
+    return match ? match[1] : null;
+  }
 });
