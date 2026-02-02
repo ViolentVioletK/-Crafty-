@@ -3,27 +3,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordBtn = document.getElementById("password-btn");
   const container = document.getElementById("pin-container");
 
-  // Modal elements
   const modal = document.getElementById("modal");
   const closeModal = document.getElementById("close-modal");
   const addForm = document.getElementById("add-pin-form");
 
-  // Open modal
-  plusBtn.addEventListener("click", () => { modal.style.display = "block"; });
-
-  // Close modal
-  closeModal.addEventListener("click", () => { modal.style.display = "none"; });
+  plusBtn.addEventListener("click", () => modal.style.display = "block");
+  closeModal.addEventListener("click", () => modal.style.display = "none");
   window.addEventListener("click", (e) => { if(e.target == modal) modal.style.display="none"; });
 
-  // Submit new pin request
+  // Add new pin request
   addForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const title = document.getElementById("pin-title").value;
     const url = document.getElementById("pin-url").value;
     const type = document.getElementById("pin-type").value;
+    const id = Date.now(); // unique ID
 
     let requests = JSON.parse(localStorage.getItem("pinRequests") || "[]");
-    requests.push({ title, url, type, date: new Date().toISOString(), approved: false });
+    requests.push({ id, title, url, type, approved: false });
     localStorage.setItem("pinRequests", JSON.stringify(requests));
 
     alert("Pin request sent for approval!");
@@ -31,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.style.display = "none";
   });
 
-  // Owner PIN check
+  // Owner check
   passwordBtn.addEventListener("click", () => {
     const pin = prompt("Enter owner PIN:");
     if(pin === "PFUDOR") window.location.href = "owner.html";
@@ -39,31 +36,36 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Load approved pins
-  const pins = JSON.parse(localStorage.getItem("pinRequests") || "[]").filter(p => p.approved);
-  pins.forEach(p => {
-    const div = document.createElement("div");
-    div.className = "pin";
+  function loadApprovedPins() {
+    container.innerHTML = "";
+    const pins = JSON.parse(localStorage.getItem("pinRequests") || "[]").filter(p => p.approved);
+    pins.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "pin";
 
-    if(p.type === "image"){
-      div.innerHTML = `<img src="${p.url}" alt="${p.title}"><p>${p.title}</p>`;
-    } else if(p.type === "video"){
-      const videoId = getYouTubeID(p.url);
-      if(videoId){
-        div.innerHTML = `
-          <iframe width="100%" height="200"
-                  src="https://www.youtube.com/embed/${videoId}"
-                  frameborder="0" allowfullscreen></iframe>
-          <p>${p.title}</p>
-        `;
-      } else {
-        div.innerHTML = `<p>Invalid video URL: ${p.title}</p>`;
+      if(p.type === "image"){
+        div.innerHTML = `<img src="${p.url}" alt="${p.title}"><p>${p.title}</p>`;
+      } else if(p.type === "video"){
+        const videoId = getYouTubeID(p.url);
+        if(videoId){
+          div.innerHTML = `
+            <iframe width="100%" height="200"
+                    src="https://www.youtube.com/embed/${videoId}"
+                    frameborder="0" allowfullscreen></iframe>
+            <p>${p.title}</p>
+          `;
+        } else {
+          div.innerHTML = `<p>Invalid video URL: ${p.title}</p>`;
+        }
       }
-    }
 
-    container.appendChild(div);
-  });
+      container.appendChild(div);
+    });
+  }
 
-  // Helper function to extract YouTube video ID
+  loadApprovedPins(); // initial load
+
+  // Helper
   function getYouTubeID(url){
     const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
