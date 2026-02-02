@@ -23,23 +23,23 @@
       <span id="close-modal" class="close">&times;</span>
       <h2>Add a Pin</h2>
       <form id="add-pin-form">
-        <input type="text" id="pin-title" placeholder="Title" required>
-
+        <input type="text" id="pin-title" placeholder="Pin Title" required>
         <select id="pin-type" required>
           <option value="image">Image</option>
           <option value="video">Video (YouTube URL)</option>
           <option value="text">Text</option>
         </select>
-
-        <!-- Image/Video URL -->
-        <input type="url" id="pin-url" placeholder="Image or Video URL" required>
-
-        <!-- Text content -->
-        <textarea id="pin-text" placeholder="Write your text here..." style="display:none; width:90%; height:80px; margin-top:10px;"></textarea>
-
+        <input type="url" id="pin-url" placeholder="Image or Video URL">
+        <textarea id="pin-text" placeholder="Text content" style="display:none;"></textarea>
         <button type="submit">Submit Pin</button>
       </form>
     </div>
+  </div>
+
+  <!-- Fullscreen view for pins -->
+  <div id="fullscreen" class="fullscreen" style="display:none;">
+    <button id="back-btn" class="back-btn">Back</button>
+    <div id="fullscreen-content" class="fullscreen-content"></div>
   </div>
 
   <script src="main.js"></script>
